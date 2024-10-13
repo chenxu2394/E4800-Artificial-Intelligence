@@ -1,0 +1,134 @@
+1. new heuristic
+
+    def heuristic(self, state: Oware):
+        collected_stones = state.get_collected_stone()
+        if collected_stones[0] >= 25:
+            return 50
+        if collected_stones[1] >= 25:
+            return -50
+        board = state.get_board()
+        if sum(board[6:]) == 0:
+            return 50
+        if sum(board[:6]) == 0:
+            return -50
+        return collected_stones[0] - collected_stones[1]
+		
+		
+timeouts = [5.0 if player != Human else None for player in players]
+		
+9) Result: ID-Minimax0 - ID-AlphaBeta10
+----------------------------------------------------------------------
+timeouts = [1.0 if player != Human else None for player in players]
+
+9) Result: ID-Minimax2 - ID-AlphaBeta7
+
+-------------------------------------------------------------------------------------------------------------
+2. old heuristic:
+
+    def heuristic(self, state: Oware):
+        collected_stones = state.get_collected_stone()
+        return collected_stones[0] - collected_stones[1]
+		
+timeouts = [1.0 if player != Human else None for player in players]
+
+9) Result: ID-Minimax2 - ID-AlphaBeta7
+
+-------------------------------------------------------------------------------------------------------------
+3. sort the actions before loop:
+
+        actions.sort(key=lambda a: -self.heuristic(state.successor(a)))
+
+9) Result: ID-Minimax2 - ID-AlphaBeta8
+9) Result: ID-Minimax0 - ID-AlphaBeta10
+13) Result: ID-Minimax5 - ID-AlphaBeta9 total 14
+10) Result: ID-Minimax4 - ID-AlphaBeta6 total 11
+
+4. Use both heuristic:
+
+    def heuristic(self, state: Oware):
+        collected_stones = state.get_collected_stone()
+        if collected_stones[0] >= 25:
+            return 50
+        if collected_stones[1] >= 25:
+            return -50
+        board = state.get_board()
+        if sum(board[6:]) == 0:
+            return 50
+        if sum(board[:6]) == 0:
+            return -50
+        return collected_stones[0] - collected_stones[1]
+
+122) Result: ID-Minimax40 - ID-AlphaBeta78
+
+4.2 use one of them:
+
+    def heuristic(self, state: Oware):
+        collected_stones = state.get_collected_stone()
+        if collected_stones[0] >= 25:
+            return 50
+        if collected_stones[1] >= 25:
+            return -50
+        # board = state.get_board()
+        # if sum(board[6:]) == 0:
+        #     return 50
+        # if sum(board[:6]) == 0:
+        #     return -50
+        return collected_stones[0] - collected_stones[1]
+
+149) Result: ID-Minimax52 - ID-AlphaBeta90
+
+5. Baseline only
+
+    def heuristic(self, state: Oware):
+        collected_stones = state.get_collected_stone()
+        return collected_stones[0] - collected_stones[1]
+
+149) Result: ID-AlphaBeta102 - ID-Minimax40
+
+6. Baseline and no shuffling
+
+149) Result: ID-AlphaBeta98 - ID-Minimax44
+
+
+7. Clear other's pit heuristic
+
+    def heuristic(self, state: Oware):
+        collected_stones = state.get_collected_stone()
+        # if collected_stones[0] >= 25:
+        #     return 50
+        # if collected_stones[1] >= 25:
+        #     return -50
+        board = state.get_board()
+        if sum(board[6:]) == 0:
+            return 50
+        if sum(board[:6]) == 0:
+            return -50
+        return collected_stones[0] - collected_stones[1]
+
+149) Result: ID-AlphaBeta88 - ID-Minimax53
+
+8. hashtable2
+    use hashtable {(state, depth) : best_action}
+
+35) Result: ID-AlphaBeta19 - ID-Minimax14
+
+9. Go back to the main branch
+    use original heuristic
+    and sort actions
+            actions.sort(key=lambda a: -self.heuristic(state.successor(a)))
+
+49) Result: ID-AlphaBeta31 - ID-Minimax17
+
+10. The original ID-alpha-beta using the iterative-deepening.py
+35) Result: ID-Minimax14 - ID-AlphaBeta21
+
+11. The new upgraded ordering by iterative deepening
+41) Result: ID-AlphaBeta33 - ID-Minimax9
+149) Result: ID-AlphaBeta94 - ID-Minimax48
+
+12. Change to 2.0s
+79) Result: ID-AlphaBeta51 - ID-Minimax24
+
+13. Correct an implemetation error, update of ascore should happen outside `if`
+Change to 1.0s
+52) Result: ID-AlphaBeta37 - ID-Minimax16
